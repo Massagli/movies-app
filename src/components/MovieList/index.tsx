@@ -6,16 +6,20 @@ import axios from 'axios';
 import MovieCard from '../MovieCard';
 import { Movie } from '@/types';
 
+import { LoaderCircle } from 'lucide-react';
+
 
 export default function(){
     const [movies, setMovies] = useState<Movie[]>([]);
+
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() =>{
         getMovies();
     }, []);
 
-    const getMovies = () =>{
-        axios({
+    const getMovies = async () =>{
+        await axios({
             method: 'get',
             url: 'https://api.themoviedb.org/3/discover/movie',
             params: {
@@ -24,12 +28,20 @@ export default function(){
             }
         }).then(response =>{
             setMovies(response.data.results);
-            console.log(response.data.results);
-        })
+        });
+
+        setIsLoading(false); 
+    }
+
+    if(isLoading){
+        return(
+            <div className='loading-container'>
+                <LoaderCircle className="animate-spin" size={40} color='#fff'/>
+            </div>
+        );
     }
 
     
-
     return(
         <ul className="movie-list">
             {movies.map((movie) =>
